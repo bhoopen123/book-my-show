@@ -1,0 +1,6 @@
+@BmsApis_HostAddress = http://localhost:5259
+
+GET {{BmsApis_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
