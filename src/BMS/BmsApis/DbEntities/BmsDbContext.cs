@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace BmsApis.DbEntities
 {
@@ -8,7 +10,7 @@ namespace BmsApis.DbEntities
 
         public BmsDbContext(DbContextOptions<BmsDbContext> options, IConfiguration configuration) : base(options)
         {
-            connectionString = configuration.GetSection("ConnectionStrings:BmsConnectionString").Value;
+            connectionString = configuration.GetSection("ConnectionStrings:BmsConnectionString")!.Value;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -24,10 +26,12 @@ namespace BmsApis.DbEntities
         public DbSet<PaymentMode> PaymentModes { get; set; }
         public DbSet<PaymentStatus> PaymentStatus { get; set; }
         public DbSet<PaymentProvider> PaymentProviders { get; set; }
+        public DbSet<City> Cities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            var currentDateTime = DateTime.UtcNow;
 
             modelBuilder.Entity<SeatType>().HasKey(x => x.Id);
             modelBuilder.Entity<UserRole>().HasKey(x => x.Id);
@@ -37,6 +41,14 @@ namespace BmsApis.DbEntities
             modelBuilder.Entity<PaymentMode>().HasKey(x => x.Id);
             modelBuilder.Entity<PaymentStatus>().HasKey(x => x.Id);
             modelBuilder.Entity<PaymentProvider>().HasKey(x => x.Id);
+
+            modelBuilder.Entity<City>().HasIndex(x => x.Name).IsUnique();
+            modelBuilder.Entity<City>().HasMany(x => x.Theatres)
+                                        .WithOne(x => x.City)
+                                        .HasForeignKey(x => x.CityId)
+                                        .HasPrincipalKey(x => x.Id);
+            
+            modelBuilder.Entity<Theatre>().HasIndex(x => x.Name).IsUnique();
 
             modelBuilder.Entity<SeatType>()
                         .HasData(
@@ -59,53 +71,87 @@ namespace BmsApis.DbEntities
                             new Feature { Id = 3, Name = "4Dx" }
                             );
 
+            modelBuilder.Entity<City>()
+                        .HasData(
+                            new City { Id = 1, Name = "Pune", IsActive = true, CreatedAtUtc = currentDateTime },
+                            new City { Id = 2, Name = "Mumbai", IsActive = true, CreatedAtUtc = currentDateTime },
+                            new City { Id = 3, Name = "Hyderabad", IsActive = true, CreatedAtUtc = currentDateTime }
+                            );
+
         }
     }
 
-    public record SeatType
+    public abstract class BaseEntity
     {
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public required string Name { get; set; }
+        public bool IsActive { get; set; }
+        public DateTime CreatedAtUtc { get; set; }
+        public DateTime? ModifiedAtUtc { get; set; }
     }
 
-    public record UserRole
+    public class City : BaseEntity
     {
-        public int Id { get; set; }
         public required string Name { get; set; }
+        public virtual ICollection<Theatre>? Theatres { get; }
     }
 
-    public record Feature
+    public class Theatre : BaseEntity
     {
-        public int Id { get; set; }
         public required string Name { get; set; }
+        public required string Address { get; set; }
+        public int MaxSeatsBookingAllowed { get; set; }
+
+        public int CityId { get; set; }
+        public virtual required City City { get; set; }
     }
 
-    public record SeatStatus
+    public class Auditorium : BaseEntity
     {
-        public int Id { get; set; }
         public required string Name { get; set; }
+        public int Rows { get; set; }
+        public int Columns { get; set; }
     }
 
-    public record TheatreStatus
+    public class Seat : BaseEntity
     {
-        public int Id { get; set; }
-        public required string Name { get; set; }
-    }
-    public record PaymentMode
-    {
-        public int Id { get; set; }
-        public required string Name { get; set; }
+        public required string Number { get; set; }
+        public int Row { get; set; }
+        public int Column { get; set; }
     }
 
-    public record PaymentStatus
+    public class User : BaseEntity
     {
-        public int Id { get; set; }
+        public required string UserName { get; set; }
         public required string Name { get; set; }
+        public string? Password { get; set; }
     }
 
-    public record PaymentProvider
+    public class Show : BaseEntity
     {
-        public int Id { get; set; }
         public required string Name { get; set; }
+        public TimeOnly StartTime { get; set; }
+        public TimeOnly EndTime { get; set; }
+    }
+
+    public class SeatInShow : BaseEntity
+    {
+
+    }
+
+    public class SeatTypeInShow : BaseEntity
+    {
+        public float Price { get; set; }
+    }
+
+    public class Ticket : BaseEntity
+    {
+        public DateTime BookingAtUtc { get; set; }
+    }
+
+    public class Payment : BaseEntity
+    {
+        public int Amount { get; set; }
+        public required string TransactionId { get; set; }
     }
 }
