@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
 
 namespace BmsApis.DbEntities
 {
@@ -27,6 +25,13 @@ namespace BmsApis.DbEntities
         public DbSet<PaymentStatus> PaymentStatus { get; set; }
         public DbSet<PaymentProvider> PaymentProviders { get; set; }
         public DbSet<City> Cities { get; set; }
+        public DbSet<Auditorium> Auditoria { get; set; }
+        public DbSet<Payment> Payments { get; set; }
+        public DbSet<Seat> Seats { get; set; }
+        public DbSet<Show> Shows { get; set; }
+        public DbSet<Theatre> Theatres { get; set; }
+        public DbSet<Ticket> Tickets { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,6 +46,15 @@ namespace BmsApis.DbEntities
             modelBuilder.Entity<PaymentMode>().HasKey(x => x.Id);
             modelBuilder.Entity<PaymentStatus>().HasKey(x => x.Id);
             modelBuilder.Entity<PaymentProvider>().HasKey(x => x.Id);
+
+            modelBuilder.Entity<City>().HasKey(x => x.Id);
+            modelBuilder.Entity<Auditorium>().HasKey(x => x.Id);
+            modelBuilder.Entity<Payment>().HasKey(x => x.Id);
+            modelBuilder.Entity<Seat>().HasKey(x => x.Id);
+            modelBuilder.Entity<Show>().HasKey(x => x.Id);
+            modelBuilder.Entity<Theatre>().HasKey(x => x.Id);
+            modelBuilder.Entity<Ticket>().HasKey(x => x.Id);
+            modelBuilder.Entity<User>().HasKey(x => x.Id);
 
             modelBuilder.Entity<City>().HasIndex(x => x.Name).IsUnique();
             modelBuilder.Entity<City>().HasMany(x => x.Theatres)
@@ -79,79 +93,5 @@ namespace BmsApis.DbEntities
                             );
 
         }
-    }
-
-    public abstract class BaseEntity
-    {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
-        public bool IsActive { get; set; }
-        public DateTime CreatedAtUtc { get; set; }
-        public DateTime? ModifiedAtUtc { get; set; }
-    }
-
-    public class City : BaseEntity
-    {
-        public required string Name { get; set; }
-        public virtual ICollection<Theatre>? Theatres { get; }
-    }
-
-    public class Theatre : BaseEntity
-    {
-        public required string Name { get; set; }
-        public required string Address { get; set; }
-        public int MaxSeatsBookingAllowed { get; set; }
-
-        public int CityId { get; set; }
-        public virtual required City City { get; set; }
-    }
-
-    public class Auditorium : BaseEntity
-    {
-        public required string Name { get; set; }
-        public int Rows { get; set; }
-        public int Columns { get; set; }
-    }
-
-    public class Seat : BaseEntity
-    {
-        public required string Number { get; set; }
-        public int Row { get; set; }
-        public int Column { get; set; }
-    }
-
-    public class User : BaseEntity
-    {
-        public required string UserName { get; set; }
-        public required string Name { get; set; }
-        public string? Password { get; set; }
-    }
-
-    public class Show : BaseEntity
-    {
-        public required string Name { get; set; }
-        public TimeOnly StartTime { get; set; }
-        public TimeOnly EndTime { get; set; }
-    }
-
-    public class SeatInShow : BaseEntity
-    {
-
-    }
-
-    public class SeatTypeInShow : BaseEntity
-    {
-        public float Price { get; set; }
-    }
-
-    public class Ticket : BaseEntity
-    {
-        public DateTime BookingAtUtc { get; set; }
-    }
-
-    public class Payment : BaseEntity
-    {
-        public int Amount { get; set; }
-        public required string TransactionId { get; set; }
     }
 }
