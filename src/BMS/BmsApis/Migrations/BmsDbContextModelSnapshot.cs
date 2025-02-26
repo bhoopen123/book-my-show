@@ -22,6 +22,46 @@ namespace BmsApis.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("BmsApis.DbEntities.Auditorium", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Columns")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Rows")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TheatreId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("TheatreId");
+
+                    b.ToTable("Auditoria");
+                });
+
             modelBuilder.Entity("BmsApis.DbEntities.City", b =>
                 {
                     b.Property<int>("Id")
@@ -54,21 +94,21 @@ namespace BmsApis.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAtUtc = new DateTime(2025, 2, 17, 18, 6, 33, 833, DateTimeKind.Utc).AddTicks(8616),
+                            CreatedAtUtc = new DateTime(2025, 2, 26, 18, 38, 44, 738, DateTimeKind.Utc).AddTicks(5327),
                             IsActive = true,
                             Name = "Pune"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAtUtc = new DateTime(2025, 2, 17, 18, 6, 33, 833, DateTimeKind.Utc).AddTicks(8616),
+                            CreatedAtUtc = new DateTime(2025, 2, 26, 18, 38, 44, 738, DateTimeKind.Utc).AddTicks(5327),
                             IsActive = true,
                             Name = "Mumbai"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAtUtc = new DateTime(2025, 2, 17, 18, 6, 33, 833, DateTimeKind.Utc).AddTicks(8616),
+                            CreatedAtUtc = new DateTime(2025, 2, 26, 18, 38, 44, 738, DateTimeKind.Utc).AddTicks(5327),
                             IsActive = true,
                             Name = "Hyderabad"
                         });
@@ -82,11 +122,21 @@ namespace BmsApis.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("AuditoriumId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ShowId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("AuditoriumId");
+
+                    b.HasIndex("ShowId");
 
                     b.ToTable("Features");
 
@@ -106,6 +156,50 @@ namespace BmsApis.Migrations
                             Id = 3,
                             Name = "4Dx"
                         });
+                });
+
+            modelBuilder.Entity("BmsApis.DbEntities.Payment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PaymentProviderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PaymentStatusId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TicketId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TransactionId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PaymentProviderId");
+
+                    b.HasIndex("PaymentStatusId");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("BmsApis.DbEntities.PaymentMode", b =>
@@ -159,6 +253,96 @@ namespace BmsApis.Migrations
                     b.ToTable("PaymentStatus");
                 });
 
+            modelBuilder.Entity("BmsApis.DbEntities.Seat", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AuditoriumId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Column")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Row")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SeatTypeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuditoriumId");
+
+                    b.HasIndex("Number")
+                        .IsUnique();
+
+                    b.HasIndex("SeatTypeId");
+
+                    b.ToTable("Seats");
+                });
+
+            modelBuilder.Entity("BmsApis.DbEntities.SeatInShow", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SeatId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SeatStatusId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ShowId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StatusUpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TicketId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SeatId");
+
+                    b.HasIndex("SeatStatusId");
+
+                    b.HasIndex("ShowId");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("SeatInShowMapping");
+                });
+
             modelBuilder.Entity("BmsApis.DbEntities.SeatStatus", b =>
                 {
                     b.Property<int>("Id")
@@ -210,6 +394,81 @@ namespace BmsApis.Migrations
                         });
                 });
 
+            modelBuilder.Entity("BmsApis.DbEntities.SeatTypeInShow", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<float>("Price")
+                        .HasColumnType("real");
+
+                    b.Property<int>("SeatTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ShowId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SeatTypeId");
+
+                    b.HasIndex("ShowId");
+
+                    b.ToTable("SeatTypeInShowMapping");
+                });
+
+            modelBuilder.Entity("BmsApis.DbEntities.Show", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AuditoriumId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuditoriumId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Shows");
+                });
+
             modelBuilder.Entity("BmsApis.DbEntities.Theatre", b =>
                 {
                     b.Property<int>("Id")
@@ -248,7 +507,7 @@ namespace BmsApis.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Theatre");
+                    b.ToTable("Theatres");
                 });
 
             modelBuilder.Entity("BmsApis.DbEntities.TheatreStatus", b =>
@@ -268,6 +527,72 @@ namespace BmsApis.Migrations
                     b.ToTable("TheatreStatus");
                 });
 
+            modelBuilder.Entity("BmsApis.DbEntities.Ticket", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BookedById")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("BookingAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookedById");
+
+                    b.ToTable("Tickets");
+                });
+
+            modelBuilder.Entity("BmsApis.DbEntities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserName")
+                        .IsUnique();
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("BmsApis.DbEntities.UserRole", b =>
                 {
                     b.Property<int>("Id")
@@ -280,7 +605,12 @@ namespace BmsApis.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("UserRoles");
 
@@ -302,6 +632,139 @@ namespace BmsApis.Migrations
                         });
                 });
 
+            modelBuilder.Entity("BmsApis.DbEntities.Auditorium", b =>
+                {
+                    b.HasOne("BmsApis.DbEntities.Theatre", "Theatre")
+                        .WithMany("Auditoria")
+                        .HasForeignKey("TheatreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Theatre");
+                });
+
+            modelBuilder.Entity("BmsApis.DbEntities.Feature", b =>
+                {
+                    b.HasOne("BmsApis.DbEntities.Auditorium", null)
+                        .WithMany("SupportedFeatures")
+                        .HasForeignKey("AuditoriumId");
+
+                    b.HasOne("BmsApis.DbEntities.Show", null)
+                        .WithMany("RequiredFeatures")
+                        .HasForeignKey("ShowId");
+                });
+
+            modelBuilder.Entity("BmsApis.DbEntities.Payment", b =>
+                {
+                    b.HasOne("BmsApis.DbEntities.PaymentProvider", "PaymentProvider")
+                        .WithMany()
+                        .HasForeignKey("PaymentProviderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BmsApis.DbEntities.PaymentStatus", "PaymentStatus")
+                        .WithMany()
+                        .HasForeignKey("PaymentStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BmsApis.DbEntities.Ticket", "Ticket")
+                        .WithMany("Payments")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PaymentProvider");
+
+                    b.Navigation("PaymentStatus");
+
+                    b.Navigation("Ticket");
+                });
+
+            modelBuilder.Entity("BmsApis.DbEntities.Seat", b =>
+                {
+                    b.HasOne("BmsApis.DbEntities.Auditorium", "Auditorium")
+                        .WithMany("Seats")
+                        .HasForeignKey("AuditoriumId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BmsApis.DbEntities.SeatType", "SeatType")
+                        .WithMany()
+                        .HasForeignKey("SeatTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Auditorium");
+
+                    b.Navigation("SeatType");
+                });
+
+            modelBuilder.Entity("BmsApis.DbEntities.SeatInShow", b =>
+                {
+                    b.HasOne("BmsApis.DbEntities.Seat", "Seat")
+                        .WithMany()
+                        .HasForeignKey("SeatId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("BmsApis.DbEntities.SeatStatus", "SeatStatus")
+                        .WithMany()
+                        .HasForeignKey("SeatStatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BmsApis.DbEntities.Show", "Show")
+                        .WithMany()
+                        .HasForeignKey("ShowId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("BmsApis.DbEntities.Ticket", "Ticket")
+                        .WithMany("BookedSeats")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Seat");
+
+                    b.Navigation("SeatStatus");
+
+                    b.Navigation("Show");
+
+                    b.Navigation("Ticket");
+                });
+
+            modelBuilder.Entity("BmsApis.DbEntities.SeatTypeInShow", b =>
+                {
+                    b.HasOne("BmsApis.DbEntities.SeatType", "SeatType")
+                        .WithMany()
+                        .HasForeignKey("SeatTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BmsApis.DbEntities.Show", "Show")
+                        .WithMany("SeatTypes")
+                        .HasForeignKey("ShowId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SeatType");
+
+                    b.Navigation("Show");
+                });
+
+            modelBuilder.Entity("BmsApis.DbEntities.Show", b =>
+                {
+                    b.HasOne("BmsApis.DbEntities.Auditorium", "Auditorium")
+                        .WithMany("Shows")
+                        .HasForeignKey("AuditoriumId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Auditorium");
+                });
+
             modelBuilder.Entity("BmsApis.DbEntities.Theatre", b =>
                 {
                     b.HasOne("BmsApis.DbEntities.City", "City")
@@ -313,9 +776,60 @@ namespace BmsApis.Migrations
                     b.Navigation("City");
                 });
 
+            modelBuilder.Entity("BmsApis.DbEntities.Ticket", b =>
+                {
+                    b.HasOne("BmsApis.DbEntities.User", "BookedBy")
+                        .WithMany()
+                        .HasForeignKey("BookedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BookedBy");
+                });
+
+            modelBuilder.Entity("BmsApis.DbEntities.UserRole", b =>
+                {
+                    b.HasOne("BmsApis.DbEntities.User", null)
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("BmsApis.DbEntities.Auditorium", b =>
+                {
+                    b.Navigation("Seats");
+
+                    b.Navigation("Shows");
+
+                    b.Navigation("SupportedFeatures");
+                });
+
             modelBuilder.Entity("BmsApis.DbEntities.City", b =>
                 {
                     b.Navigation("Theatres");
+                });
+
+            modelBuilder.Entity("BmsApis.DbEntities.Show", b =>
+                {
+                    b.Navigation("RequiredFeatures");
+
+                    b.Navigation("SeatTypes");
+                });
+
+            modelBuilder.Entity("BmsApis.DbEntities.Theatre", b =>
+                {
+                    b.Navigation("Auditoria");
+                });
+
+            modelBuilder.Entity("BmsApis.DbEntities.Ticket", b =>
+                {
+                    b.Navigation("BookedSeats");
+
+                    b.Navigation("Payments");
+                });
+
+            modelBuilder.Entity("BmsApis.DbEntities.User", b =>
+                {
+                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }

@@ -10,5 +10,7 @@
 
         public int AuditoriumId { get; set; }
         public virtual required Auditorium Auditorium { get; set; }
+
+        public virtual required ICollection<SeatTypeInShow> SeatTypes { get; set; }
     }
 }
