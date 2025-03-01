@@ -12,8 +12,8 @@ namespace BmsApis.DbEntities
         public int TheatreId { get; set; }
         public virtual required Theatre Theatre { get; set; }
 
-        public virtual ICollection<Seat>? Seats { get; set; }
-        public virtual ICollection<Feature>? SupportedFeatures { get; set; }
+        public virtual required ICollection<Seat> Seats { get; set; }
+        public virtual required ICollection<Feature> SupportedFeatures { get; set; }
         public virtual ICollection<Show>? Shows { get; set; }
     }
 }

@@ -71,7 +71,9 @@ namespace BmsApis.DbEntities
                                                 .WithOne(x => x.Auditorium)
                                                 .HasForeignKey(x => x.AuditoriumId)
                                                 .HasPrincipalKey(x => x.Id);
-            modelBuilder.Entity<Auditorium>().HasMany(x => x.SupportedFeatures);
+            modelBuilder.Entity<Auditorium>().HasMany(x => x.SupportedFeatures)
+                                                .WithMany() // https://learn.microsoft.com/en-us/ef/core/modeling/relationships/many-to-many#unidirectional-many-to-many
+                                                .UsingEntity("Auditorium_SupportedFeatures");
             modelBuilder.Entity<Auditorium>().HasMany(x => x.Shows);
 
             modelBuilder.Entity<Payment>().HasKey(x => x.Id);
@@ -96,7 +98,9 @@ namespace BmsApis.DbEntities
 
             modelBuilder.Entity<Show>().HasKey(x => x.Id);
             modelBuilder.Entity<Show>().HasIndex(x => x.Name).IsUnique();
-            modelBuilder.Entity<Show>().HasMany(x => x.RequiredFeatures);
+            modelBuilder.Entity<Show>().HasMany(x => x.RequiredFeatures)
+                                        .WithMany() // https://learn.microsoft.com/en-us/ef/core/modeling/relationships/many-to-many#unidirectional-many-to-many
+                                        .UsingEntity("Show_RequiredFeatures");
             modelBuilder.Entity<Show>().HasMany(x => x.SeatTypes)
                                         .WithOne(x => x.Show)
                                         .HasForeignKey(x => x.ShowId);
@@ -109,8 +113,9 @@ namespace BmsApis.DbEntities
 
             modelBuilder.Entity<User>().HasKey(x => x.Id);
             modelBuilder.Entity<User>().HasIndex(x => x.UserName).IsUnique();
-            modelBuilder.Entity<User>().HasMany(x => x.UserRoles);
-
+            modelBuilder.Entity<User>().HasMany(x => x.UserRoles)
+                                       .WithMany() // https://learn.microsoft.com/en-us/ef/core/modeling/relationships/many-to-many#unidirectional-many-to-many
+                                       .UsingEntity("User_Role_Map");
 
             modelBuilder.Entity<SeatType>()
                         .HasData(

@@ -22,6 +22,21 @@ namespace BmsApis.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Auditorium_SupportedFeatures", b =>
+                {
+                    b.Property<int>("AuditoriumId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SupportedFeaturesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AuditoriumId", "SupportedFeaturesId");
+
+                    b.HasIndex("SupportedFeaturesId");
+
+                    b.ToTable("Auditorium_SupportedFeatures");
+                });
+
             modelBuilder.Entity("BmsApis.DbEntities.Auditorium", b =>
                 {
                     b.Property<int>("Id")
@@ -96,21 +111,21 @@ namespace BmsApis.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAtUtc = new DateTime(2025, 3, 1, 7, 50, 4, 354, DateTimeKind.Utc).AddTicks(170),
+                            CreatedAtUtc = new DateTime(2025, 3, 1, 8, 40, 29, 893, DateTimeKind.Utc).AddTicks(4220),
                             IsActive = true,
                             Name = "Pune"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAtUtc = new DateTime(2025, 3, 1, 7, 50, 4, 354, DateTimeKind.Utc).AddTicks(170),
+                            CreatedAtUtc = new DateTime(2025, 3, 1, 8, 40, 29, 893, DateTimeKind.Utc).AddTicks(4220),
                             IsActive = true,
                             Name = "Mumbai"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAtUtc = new DateTime(2025, 3, 1, 7, 50, 4, 354, DateTimeKind.Utc).AddTicks(170),
+                            CreatedAtUtc = new DateTime(2025, 3, 1, 8, 40, 29, 893, DateTimeKind.Utc).AddTicks(4220),
                             IsActive = true,
                             Name = "Hyderabad"
                         });
@@ -124,22 +139,12 @@ namespace BmsApis.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AuditoriumId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int?>("ShowId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("AuditoriumId");
-
-                    b.HasIndex("ShowId");
 
                     b.ToTable("Features");
 
@@ -623,12 +628,7 @@ namespace BmsApis.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("UserRoles");
 
@@ -650,6 +650,51 @@ namespace BmsApis.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Show_RequiredFeatures", b =>
+                {
+                    b.Property<int>("RequiredFeaturesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ShowId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RequiredFeaturesId", "ShowId");
+
+                    b.HasIndex("ShowId");
+
+                    b.ToTable("Show_RequiredFeatures");
+                });
+
+            modelBuilder.Entity("User_Role_Map", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserRolesId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "UserRolesId");
+
+                    b.HasIndex("UserRolesId");
+
+                    b.ToTable("User_Role_Map");
+                });
+
+            modelBuilder.Entity("Auditorium_SupportedFeatures", b =>
+                {
+                    b.HasOne("BmsApis.DbEntities.Auditorium", null)
+                        .WithMany()
+                        .HasForeignKey("AuditoriumId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BmsApis.DbEntities.Feature", null)
+                        .WithMany()
+                        .HasForeignKey("SupportedFeaturesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("BmsApis.DbEntities.Auditorium", b =>
                 {
                     b.HasOne("BmsApis.DbEntities.Theatre", "Theatre")
@@ -659,17 +704,6 @@ namespace BmsApis.Migrations
                         .IsRequired();
 
                     b.Navigation("Theatre");
-                });
-
-            modelBuilder.Entity("BmsApis.DbEntities.Feature", b =>
-                {
-                    b.HasOne("BmsApis.DbEntities.Auditorium", null)
-                        .WithMany("SupportedFeatures")
-                        .HasForeignKey("AuditoriumId");
-
-                    b.HasOne("BmsApis.DbEntities.Show", null)
-                        .WithMany("RequiredFeatures")
-                        .HasForeignKey("ShowId");
                 });
 
             modelBuilder.Entity("BmsApis.DbEntities.Payment", b =>
@@ -805,11 +839,34 @@ namespace BmsApis.Migrations
                     b.Navigation("BookedBy");
                 });
 
-            modelBuilder.Entity("BmsApis.DbEntities.UserRole", b =>
+            modelBuilder.Entity("Show_RequiredFeatures", b =>
+                {
+                    b.HasOne("BmsApis.DbEntities.Feature", null)
+                        .WithMany()
+                        .HasForeignKey("RequiredFeaturesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BmsApis.DbEntities.Show", null)
+                        .WithMany()
+                        .HasForeignKey("ShowId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("User_Role_Map", b =>
                 {
                     b.HasOne("BmsApis.DbEntities.User", null)
-                        .WithMany("UserRoles")
-                        .HasForeignKey("UserId");
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BmsApis.DbEntities.UserRole", null)
+                        .WithMany()
+                        .HasForeignKey("UserRolesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("BmsApis.DbEntities.Auditorium", b =>
@@ -817,8 +874,6 @@ namespace BmsApis.Migrations
                     b.Navigation("Seats");
 
                     b.Navigation("Shows");
-
-                    b.Navigation("SupportedFeatures");
                 });
 
             modelBuilder.Entity("BmsApis.DbEntities.City", b =>
@@ -828,8 +883,6 @@ namespace BmsApis.Migrations
 
             modelBuilder.Entity("BmsApis.DbEntities.Show", b =>
                 {
-                    b.Navigation("RequiredFeatures");
-
                     b.Navigation("SeatTypes");
                 });
 
@@ -843,11 +896,6 @@ namespace BmsApis.Migrations
                     b.Navigation("BookedSeats");
 
                     b.Navigation("Payments");
-                });
-
-            modelBuilder.Entity("BmsApis.DbEntities.User", b =>
-                {
-                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }

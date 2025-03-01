@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Composition.Convention;
 
 namespace BmsApis.DbEntities
 {
@@ -6,10 +7,10 @@ namespace BmsApis.DbEntities
     {
         [StringLength(100)]
         public required string UserName { get; set; }
-        
+
         [StringLength(100)]
         public required string Name { get; set; }
-        
+
         [StringLength(50)]
         public string? Password { get; set; }
 
