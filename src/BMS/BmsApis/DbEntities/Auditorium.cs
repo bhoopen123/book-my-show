@@ -1,7 +1,10 @@
-﻿namespace BmsApis.DbEntities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BmsApis.DbEntities
 {
     public class Auditorium : BaseEntity
     {
+        [StringLength(100)]
         public required string Name { get; set; }
         public int Rows { get; set; }
         public int Columns { get; set; }

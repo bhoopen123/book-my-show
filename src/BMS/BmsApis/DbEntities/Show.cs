@@ -1,7 +1,11 @@
-﻿namespace BmsApis.DbEntities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BmsApis.DbEntities
 {
     public class Show : BaseEntity
     {
+
+        [StringLength(100)]
         public required string Name { get; set; }
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }
