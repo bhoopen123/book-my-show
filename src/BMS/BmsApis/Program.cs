@@ -1,10 +1,12 @@
 using BmsApis.DbEntities;
+using BmsApis.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<BmsDbContext>(db => db.UseSqlServer(builder.Configuration.GetConnectionString("BmsConnectionString")), ServiceLifetime.Singleton);
 builder.Services.AddControllers();
+builder.Services.AddScoped<TicketService>();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
