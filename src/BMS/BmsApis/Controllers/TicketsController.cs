@@ -9,15 +9,16 @@ namespace BmsApis.Controllers
     public class TicketsController(TicketService ticketService) : ControllerBase
     {
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] BookTicketRequest bookTicketRequest, CancellationToken cancellationToken)
+        public async Task<ActionResult<BookTicketResponse>> Post([FromBody] BookTicketRequest bookTicketRequest, CancellationToken cancellationToken)
         {
             BookTicketResponse bookTicketResponse = new BookTicketResponse();
 
             try
             {
-                int ticketId = ticketService.BookTicket(bookTicketRequest.ShowSeatIds);
+                int ticketId = ticketService.BookTicket(bookTicketRequest.UserId, bookTicketRequest.ShowSeatIds);
                 bookTicketResponse.Status = ResponseStatus.Success;
-                //bookTicketResponse.TicketId = ticketId;
+                bookTicketResponse.TicketId = ticketId;
+                bookTicketResponse.Message = "Ticket generated successfully";
             }
             catch (Exception ex)
             {
