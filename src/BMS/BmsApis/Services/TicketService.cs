@@ -2,13 +2,13 @@
 using BmsApis.DbEntities;
 using BmsApis.Exceptions;
 using BmsApis.Repositories;
-using System.Data;
 
 namespace BmsApis.Services
 {
     public class TicketService(IUserRepository userRepository,
                                 ISeatInShowRepository seatInShowRepository,
-                                ITicketRepository ticketRepository)
+                                ITicketRepository ticketRepository,
+                                BmsDbContext bmsDbContext)
     {
 
         private DateTime systemDateTime = DateTime.UtcNow;
@@ -26,43 +26,55 @@ namespace BmsApis.Services
             // 4. Else, Lock the given showSeats for this user
             // 5. Prepare a dummy ticket
             // 6. Return ticketId
-
-            var selectedSeatsInShow = seatInShowRepository.GetSeatsInShow(bookSeatIds);
-            foreach (var selectedSeatInShow in selectedSeatsInShow)
+            using (var transaction = bmsDbContext.Database.BeginTransaction())
             {
-                if (!IsSeatInShowAvailable(selectedSeatInShow))
+                try
                 {
-                    throw new SeatInShowNotAvailableException("Seat(s) not available.");
+                    var selectedSeatsInShow = seatInShowRepository.GetSeatsInShow(bookSeatIds);
+                    foreach (var selectedSeatInShow in selectedSeatsInShow)
+                    {
+                        if (!IsSeatInShowAvailable(selectedSeatInShow))
+                        {
+                            throw new SeatInShowNotAvailableException("Seat(s) not available.");
+                        }
+                    }
+
+                    var bookedBy = userRepository.GetUser(userId);
+                    if (bookedBy is null)
+                    {
+                        throw new UserNotFoundException("User not found");
+                    }
+
+                    //
+                    foreach (var selectedSeatInShow in selectedSeatsInShow)
+                    {
+                        selectedSeatInShow.SeatStatus = new SeatStatus() { Id = 3, Name = "Locked" };
+                        selectedSeatInShow.StatusUpdatedAt = systemDateTime;
+
+                    }
+                    // save the record
+                    selectedSeatsInShow = seatInShowRepository.SaveRange(selectedSeatsInShow);
+
+                    // generate a ticket
+                    var ticket = new Ticket()
+                    {
+                        IsActive = true,
+                        BookedSeats = selectedSeatsInShow.ToList(),
+                        BookedBy = bookedBy!
+                    };
+
+                    // Save ticket
+                    ticket = ticketRepository.Save(ticket);
+
+                    transaction.Commit();
+                    return ticket.Id;
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
                 }
             }
-
-            var bookedBy = userRepository.GetUser(userId);
-            if (bookedBy is null)
-            {
-                throw new UserNotFoundException("User not found");
-            }
-
-            //
-            foreach (var selectedSeatInShow in selectedSeatsInShow)
-            {
-                selectedSeatInShow.SeatStatus = new SeatStatus() { Id = 3, Name = "Locked" };
-                selectedSeatInShow.StatusUpdatedAt = systemDateTime;
-
-            }
-            // save the record
-            selectedSeatsInShow = seatInShowRepository.SaveRange(selectedSeatsInShow);
-
-            // generate a ticket
-            var ticket = new Ticket()
-            {
-                IsActive = true,
-                BookedSeats = selectedSeatsInShow.ToList(),
-                BookedBy = bookedBy!
-            };
-
-            // Save ticket
-            ticket = ticketRepository.Save(ticket);
-            return ticket.Id;
         }
 
         private bool IsSeatInShowAvailable(SeatInShow seatInShow)
